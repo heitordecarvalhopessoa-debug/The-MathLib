@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Metry</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom"></script>
+    <link rel="icon" type="image/png" href="assets/Icon.png">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header>
+    <div class="logo-area"><span class="logo">Metry</span></div>
+    <div class="nav-menu">
+        <button class="btn-nav btn-clear" onclick="clearAll()">Limpar</button>
+        <button class="btn-nav" onclick="exportPNG()">Exportar PNG</button>
+        
+        <div class="menu-item" tabindex="0">
+            <button class="btn-nav">Adicionar Modelo ▾</button>
+            <div class="dropdown" id="models-dropdown">
+            </div>
+        </div>
+
+        <div class="menu-item" tabindex="0">
+            <button class="btn-nav">Calc ▾</button>
+            <div class="dropdown" style="width: 240px;">
+                <div class="calc-grid">
+                    <button class="calc-btn" onclick="insertMath('+')">+</button>
+                    <button class="calc-btn" onclick="insertMath('-')">-</button>
+                    <button class="calc-btn" onclick="insertMath('*')">×</button>
+                    <button class="calc-btn" onclick="insertMath('/')">÷</button>
+                    <button class="calc-btn" onclick="insertMath('^')">^</button>
+                    <button class="calc-btn" onclick="insertMath('sqrt(')">√</button>
+                    <button class="calc-btn" onclick="insertMath('log(')">log</button>
+                    <button class="calc-btn" onclick="insertMath('exp(')">eˣ</button>
+                    <button class="calc-btn" onclick="insertMath('sin(')">sin</button>
+                    <button class="calc-btn" onclick="insertMath('cos(')">cos</button>
+                    <button class="calc-btn" onclick="insertMath('tan(')">tan</button>
+                    <button class="calc-btn" onclick="insertMath('x')">x</button>
+                    <button class="calc-btn" onclick="insertMath('(')">(</button>
+                    <button class="calc-btn" onclick="insertMath(')')">)</button>
+                    <button class="calc-btn" onclick="insertMath('pi')">π</button>
+                    <button class="calc-btn" onclick="insertMath('abs(')">|x|</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<div id="startup-menu">
+    <div id="startup-card">
+        <h2>Escolha um modo</h2>
+        <p>Comece no modo livre ou em passo a passo. Escolha tema e unidades antes de iniciar.</p>
+        <div class="startup-options">
+            <button class="startup-option" onclick="selectStartupMode('free')">
+                <h3>Modo Livre</h3>
+                <span>Digite funções livremente e veja o gráfico.</span>
+            </button>
+            <button class="startup-option" onclick="selectStartupMode('step')">
+                <h3>Passo a Passo</h3>
+                <span>Veja valores de cada função em um ponto x selecionado.</span>
+            </button>
+        </div>
+        <div class="startup-toggle-row">
+            <button class="startup-option small" id="theme-toggle-button" onclick="toggleTheme()">Tema Escuro</button>
+            <button class="startup-option small" id="angle-toggle-button" onclick="toggleAngleMode()">Usar Graus</button>
+        </div>
+    </div>
+</div>
+
+<main>
+    <div id="sidebar">
+        <div id="functions-list"></div>
+        <button id="add-button" class="btn-add" onclick="addInput()">+ Nova Função</button>
+    </div>
+    <div id="graph-container">
+        <div id="annotation-layer"></div>
+        <canvas id="mainChart"></canvas>
+    </div>
+</main>
+
+<div id="context-menu" class="context-menu hidden">
+    <button class="context-item" onclick="toggleComparePanel()">Comparação</button>
+    <button class="context-item" onclick="toggleStepMode()">Modo Passo a Passo</button>
+    <button class="context-item" onclick="toggleTheme()">Tema</button>
+    <button class="context-item" onclick="toggleAngleMode()"><span id="angle-label">Radianos</span></button>
+    <button class="context-item" onclick="openAnnotationPanel()">Anotações</button>
+</div>
+
+<div id="compare-panel" class="panel hidden">
+    <h3>Comparação</h3>
+    <small>Mostrar ou ocultar cada função no gráfico.</small>
+    <div id="compare-list"></div>
+</div>
+
+<div id="step-panel" class="panel hidden">
+    <h3>Modo Passo a Passo</h3>
+    <small>Arraste para ver os valores de cada função no ponto atual.</small>
+    <div class="panel-row">
+        <span>x = <strong id="step-value">0</strong></span>
+    </div>
+    <input type="range" id="step-range" min="-10" max="10" step="0.1" value="0" oninput="updateStepX(this.value)">
+    <div id="step-info"></div>
+</div>
+
+<div id="annotation-panel" class="panel hidden">
+    <h3>Anotações</h3>
+    <small>Clique no gráfico para adicionar anotações quando o modo estiver ativado.</small>
+    <div class="panel-row">
+        <button class="btn-nav" onclick="toggleAnnotationAddMode()" id="annotation-mode-button">Ativar adição</button>
+        <span id="annotation-mode-status" class="annotation-flag">Desativado</span>
+    </div>
+    <div id="annotation-list"></div>
+</div>
+
+<script src="js/main.js"></script>
+<script src="js/menu.js"></script>
+<script src="js/script.js"></script>
+</body>
+</html>
