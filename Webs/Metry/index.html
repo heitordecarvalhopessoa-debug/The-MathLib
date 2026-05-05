@@ -26,7 +26,7 @@
 
         <div class="menu-item" tabindex="0">
             <button class="btn-nav">Calc ▾</button>
-            <div class="dropdown" style="width: 240px;">
+            <div class="dropdown" style="width: 280px; max-height: 450px; overflow-y: auto;">
                 <div class="calc-grid">
                     <button class="calc-btn" onclick="insertMath('+')">+</button>
                     <button class="calc-btn" onclick="insertMath('-')">-</button>
@@ -35,15 +35,29 @@
                     <button class="calc-btn" onclick="insertMath('^')">^</button>
                     <button class="calc-btn" onclick="insertMath('sqrt(')">√</button>
                     <button class="calc-btn" onclick="insertMath('log(')">log</button>
+                    <button class="calc-btn" onclick="insertMath('ln(')">ln</button>
+                    <button class="calc-btn trig-btn" onclick="insertMath('sin(')">sin</button>
+                    <button class="calc-btn trig-btn" onclick="insertMath('cos(')">cos</button>
+                    <button class="calc-btn trig-btn" onclick="insertMath('tan(')">tan</button>
                     <button class="calc-btn" onclick="insertMath('exp(')">eˣ</button>
-                    <button class="calc-btn" onclick="insertMath('sin(')">sin</button>
-                    <button class="calc-btn" onclick="insertMath('cos(')">cos</button>
-                    <button class="calc-btn" onclick="insertMath('tan(')">tan</button>
+                    <button class="calc-btn trig-btn" onclick="insertMath('asin(')">asin</button>
+                    <button class="calc-btn trig-btn" onclick="insertMath('acos(')">acos</button>
+                    <button class="calc-btn trig-btn" onclick="insertMath('atan(')">atan</button>
+                    <button class="calc-btn" onclick="insertMath('abs(')">|x|</button>
+                    <button class="calc-btn trig-btn" onclick="insertMath('sec(')">sec</button>
+                    <button class="calc-btn trig-btn" onclick="insertMath('csc(')">csc</button>
+                    <button class="calc-btn trig-btn" onclick="insertMath('cot(')">cot</button>
+                    <button class="calc-btn trig-btn" onclick="insertMath('sinh(')">sinh</button>
+                    <button class="calc-btn trig-btn" onclick="insertMath('cosh(')">cosh</button>
+                    <button class="calc-btn trig-btn" onclick="insertMath('tanh(')">tanh</button>
+                    <button class="calc-btn trig-btn" onclick="insertMath('atan2(')">atan2</button>
+                    <button class="calc-btn trig-btn" onclick="insertMath('hypot(')">hypot</button>
                     <button class="calc-btn" onclick="insertMath('x')">x</button>
+                    <button class="calc-btn" onclick="insertMath('pi')">π</button>
+                    <button class="calc-btn" onclick="insertMath('e')">e</button>
+                    <button class="calc-btn" onclick="insertMath(',')">,</button>
                     <button class="calc-btn" onclick="insertMath('(')">(</button>
                     <button class="calc-btn" onclick="insertMath(')')">)</button>
-                    <button class="calc-btn" onclick="insertMath('pi')">π</button>
-                    <button class="calc-btn" onclick="insertMath('abs(')">|x|</button>
                 </div>
             </div>
         </div>
