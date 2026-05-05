@@ -1,5 +1,25 @@
 // Initialization and Event Listeners
 
+/**
+ * Inserts mathematical functions or operators into the active function input
+ * @param {string} val - The string to insert (e.g., 'sin(')
+ */
+function insertMath(val) {
+    const activeInput = document.activeElement;
+    if (activeInput && activeInput.classList.contains('func-input')) {
+        const start = activeInput.selectionStart;
+        const end = activeInput.selectionEnd;
+        const text = activeInput.value;
+        activeInput.value = text.substring(0, start) + val + text.substring(end);
+        
+        // Position cursor after insertion
+        const newPos = start + val.length;
+        activeInput.setSelectionRange(newPos, newPos);
+        activeInput.focus();
+        if (typeof renderAll === 'function') renderAll();
+    }
+}
+
 function getMousePositionOnChart(evt) {
     const rect = document.getElementById('mainChart').getBoundingClientRect();
     return {
