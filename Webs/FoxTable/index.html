@@ -31,8 +31,10 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 1rem;
-            padding: 0 22px;
+            gap: 1.5rem;
+            padding: 0 24px;
+            position: sticky;
+            top: 0;
             background: linear-gradient(180deg, rgba(15, 23, 42, 0.96), rgba(15, 23, 42, 0.86));
             border-bottom: 1px solid rgba(148, 163, 184, 0.16);
             box-shadow: 0 18px 40px rgba(0, 0, 0, 0.18);
@@ -40,13 +42,24 @@
 
         #topbar div {
             font-weight: 700;
+            font-size: 1.2rem;
             letter-spacing: 0.02em;
             color: #f8fafc;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .btn-toggle-sidebar {
+            background: none;
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 5px 10px;
+            margin: 0;
+            width: auto;
         }
 
         #topbar input {
             flex: 1;
-            max-width: 280px;
             padding: 10px 14px;
             border: 1px solid rgba(148, 163, 184, 0.18);
             border-radius: 999px;
@@ -65,6 +78,11 @@
             gap: 18px;
             padding: 18px;
             min-height: calc(100vh - 56px);
+            transition: grid-template-columns 0.3s ease;
+        }
+
+        #hud.sidebar-hidden {
+            grid-template-columns: 0px minmax(0, 1fr) 280px;
         }
 
         #sidebar,
@@ -76,6 +94,14 @@
             box-shadow: 0 24px 60px rgba(0, 0, 0, 0.14);
             overflow: auto;
             backdrop-filter: blur(10px);
+            transition: transform 0.3s ease, opacity 0.3s ease, padding 0.3s;
+        }
+
+        .sidebar-hidden #sidebar {
+            transform: translateX(-270px);
+            opacity: 0;
+            padding: 0;
+            pointer-events: none;
         }
 
         #workspace {
@@ -182,6 +208,21 @@
             transition: border-color 0.2s ease, transform 0.2s ease;
         }
 
+        .prop-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 10px 0;
+            font-size: 0.85rem;
+        }
+
+        .check-row {
+            display: flex;
+            gap: 15px;
+            margin: 10px 0;
+            font-size: 0.85rem;
+        }
+
         .tree-node input:focus,
         input:focus,
         select:focus {
@@ -252,8 +293,11 @@
 <body>
 
     <div id="topbar">
-        <div>Foxtable</div>
-        <input id="busca" placeholder="Buscar...">
+        <div>
+            <button class="btn-toggle-sidebar" onclick="toggleSidebar()">☰</button>
+            Foxtable
+        </div>
+        <input id="busca" placeholder="Buscar nos seus gráficos..." oninput="atualizarLista()">
     </div>
 
     <div id="hud">
@@ -282,10 +326,33 @@
                 <option value="radar">Radar</option>
                 <option value="polarArea">Área Polar</option>
                 <option value="bubble">Bolhas</option>
+                <option value="scatter">Dispersão</option>
+                <option value="horizontalBar">Barra Horizontal</option>
+                <option value="stackedBar">Barra Empilhada</option>
             </select>
 
             <input id="dados" placeholder="10,20,30">
             <input id="labels" placeholder="A,B,C">
+            <input id="labelX" placeholder="Título Eixo X">
+            <input id="labelY" placeholder="Título Eixo Y">
+
+            <div class="prop-row">
+                <span>Suavizar:</span>
+                <input type="range" id="tension" min="0" max="1" step="0.1" value="0.3">
+            </div>
+            <div class="prop-row">
+                <span>Ponto:</span>
+                <input type="range" id="radius" min="0" max="15" step="1" value="4">
+            </div>
+            <div class="prop-row">
+                <span>Borda:</span>
+                <input type="range" id="borderWidth" min="0" max="10" step="1" value="2">
+            </div>
+
+            <div class="check-row">
+                <label><input type="checkbox" id="mostrarLegenda" checked> Legenda</label>
+                <label><input type="checkbox" id="mostrarGrade" checked> Grade</label>
+            </div>
 
             <select id="paleta">
                 <option value="vibrante">Vibrante</option>
@@ -301,6 +368,8 @@
             <button onclick="duplicarGrafico()">Duplicar</button>
             <button onclick="limparGrafico()">Limpar</button>
             <button onclick="excluirGrafico()">Excluir</button>
+            <button onclick="exportarCSV()" style="background: #10b981;">Exportar CSV</button>
+            <button onclick="copiarImagem()" style="background: #8b5cf6;">Copiar Imagem</button>
 
             <hr>
 
@@ -348,7 +417,14 @@
                 tipo: "bar",
                 dados: [10, 20, 30],
                 labels: ["A", "B", "C"],
-                paleta: "vibrante"
+                paleta: "vibrante",
+                tension: 0.3,
+                radius: 4,
+                borderWidth: 2,
+                mostrarLegenda: true,
+                mostrarGrade: true,
+                labelX: "",
+                labelY: ""
             };
             graficos.push(g);
             selecionar(g.id);
@@ -380,6 +456,13 @@
             if (g.tipo !== "tree") {
                 $("dados").value = g.dados ? g.dados.join(",") : "";
                 $("labels").value = g.labels ? g.labels.join(",") : "";
+                $("labelX").value = g.labelX || "";
+                $("labelY").value = g.labelY || "";
+                $("tension").value = g.tension !== undefined ? g.tension : 0.3;
+                $("radius").value = g.radius !== undefined ? g.radius : 4;
+                $("borderWidth").value = g.borderWidth !== undefined ? g.borderWidth : 2;
+                $("mostrarLegenda").checked = g.mostrarLegenda !== false;
+                $("mostrarGrade").checked = g.mostrarGrade !== false;
                 $("paleta").value = g.paleta || "vibrante";
             }
 
@@ -397,6 +480,11 @@
             $("dados").style.display = isTree ? "none" : "block";
             $("labels").style.display = isTree ? "none" : "block";
             $("paleta").style.display = isTree ? "none" : "block";
+            $("labelX").style.display = isTree ? "none" : "block";
+            $("labelY").style.display = isTree ? "none" : "block";
+            document.querySelectorAll('.prop-row, .check-row').forEach(el => {
+                el.style.display = isTree ? "none" : "flex";
+            });
 
             if (isTree) {
                 renderizarArvore(g);
@@ -414,12 +502,15 @@
             }
 
             const cores = gerarCores(g.dados.length, g.paleta);
+            const tipoReal = (g.tipo === 'horizontalBar' || g.tipo === 'stackedBar') ? 'bar' : g.tipo;
 
-            chart.config.type = g.tipo;
+            chart.config.type = tipoReal;
 
             // Ajuste de dados para gráfico de Bolhas (Bubble)
             const processarDados = g.tipo === 'bubble'
                 ? g.dados.map((v, i) => ({ x: i + 1, y: v, r: v / 2 }))
+                : g.tipo === 'scatter'
+                ? g.dados.map((v, i) => ({ x: i, y: v }))
                 : g.dados;
 
             chart.data = {
@@ -429,24 +520,39 @@
                     data: processarDados,
                     backgroundColor: cores,
                     borderColor: "#111",
-                    borderWidth: 2,
+                    borderWidth: g.borderWidth,
                     borderRadius: 8,
-                    tension: 0.35,
+                    pointRadius: g.radius,
+                    tension: g.tension,
                     fill: g.tipo === "line"
                 }]
             };
 
             chart.options = {
                 responsive: true,
+                indexAxis: g.tipo === 'horizontalBar' ? 'y' : 'x',
                 animation: { duration: 800 },
                 plugins: {
-                    legend: { labels: { color: "#ddd" } },
+                    legend: { 
+                        display: g.mostrarLegenda,
+                        labels: { color: "#ddd" } 
+                    },
                     tooltip: { backgroundColor: "#111" }
                 },
                 scales: (["pie", "doughnut", "polarArea"].includes(g.tipo)) ? {} :
                     (g.tipo === "radar" ? { r: { ticks: { display: false } } } : {
-                        x: { ticks: { color: "#aaa" } },
-                        y: { ticks: { color: "#aaa" } }
+                        x: { 
+                            stacked: g.tipo === 'stackedBar',
+                            display: g.mostrarGrade, 
+                            ticks: { color: "#aaa" },
+                            title: { display: !!g.labelX, text: g.labelX, color: '#aaa' }
+                        },
+                        y: { 
+                            stacked: g.tipo === 'stackedBar',
+                            display: g.mostrarGrade,
+                            ticks: { color: "#aaa" },
+                            title: { display: !!g.labelY, text: g.labelY, color: '#aaa' }
+                        }
                     })
             };
 
@@ -544,6 +650,13 @@
                 g.tipo = $("tipo").value;
                 g.dados = $("dados").value.split(',').map(Number);
                 g.labels = $("labels").value.split(',');
+                g.labelX = $("labelX").value;
+                g.labelY = $("labelY").value;
+                g.tension = parseFloat($("tension").value);
+                g.radius = parseInt($("radius").value);
+                g.borderWidth = parseInt($("borderWidth").value);
+                g.mostrarLegenda = $("mostrarLegenda").checked;
+                g.mostrarGrade = $("mostrarGrade").checked;
                 g.paleta = $("paleta").value;
             }
 
@@ -574,14 +687,47 @@
         }
 
         function atualizarLista() {
+            const termo = $("busca").value.toLowerCase();
             lista.innerHTML = "";
-            graficos.forEach(g => {
+            graficos.filter(g => g.titulo.toLowerCase().includes(termo)).forEach(g => {
                 const d = document.createElement("div");
                 d.className = "grafico-item" + (g.id === selecionado ? " ativo" : "");
                 d.innerText = g.titulo;
                 d.onclick = () => selecionar(g.id);
                 lista.appendChild(d);
             });
+        }
+
+        function toggleSidebar() {
+            $("hud").classList.toggle("sidebar-hidden");
+        }
+
+        function exportarCSV() {
+            if (!selecionado) return;
+            const g = graficos.find(x => x.id === selecionado);
+            let csv = "Label,Valor\n";
+            g.labels.forEach((l, i) => csv += `${l},${g.dados[i]}\n`);
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.setAttribute('href', url);
+            a.setAttribute('download', `${g.titulo}.csv`);
+            a.click();
+            toast("CSV exportado!");
+        }
+
+        async function copiarImagem() {
+            if (!chart) return;
+            try {
+                const canvas = $("grafico");
+                canvas.toBlob(async (blob) => {
+                    const data = [new ClipboardItem({ [blob.type]: blob })];
+                    await navigator.clipboard.write(data);
+                    toast("Gráfico copiado para área de transferência!");
+                });
+            } catch (err) {
+                toast("Erro ao copiar imagem.");
+            }
         }
 
         async function exportarPNG() {
@@ -637,7 +783,13 @@
             }
         }
 
-        $("dados").oninput = $("labels").oninput = () => { if (selecionado) atualizarGrafico(); }
+        // Auto-atualização ao mudar inputs de propriedades
+        ["dados", "labels", "labelX", "labelY", "tension", "radius", "borderWidth"].forEach(id => {
+            $(id).oninput = () => { if (selecionado) atualizarGrafico(); }
+        });
+        ["mostrarLegenda", "mostrarGrade"].forEach(id => {
+            $(id).onchange = () => { if (selecionado) atualizarGrafico(); }
+        });
 
         carregar();
     </script>
