@@ -1,0 +1,86 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f0f2f5;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    color: #333;
+}
+
+.container {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    width: 90%;
+    max-width: 1000px;
+}
+
+header { text-align: center; margin-bottom: 20px; }
+h1 { color: #4a90e2; margin: 0; }
+h3 { font-size: 0.9rem; text-transform: uppercase; color: #777; margin: 15px 0 10px; border-bottom: 1px solid #eee; }
+
+.geo-layout {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 30px;
+}
+
+.sidebar-controls { background: #fafafa; padding: 15px; border-radius: 10px; }
+.control-group { margin-bottom: 12px; font-size: 0.85rem; }
+input[type="range"] { width: 100%; height: 5px; }
+
+.color-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+.color-grid input { width: 100%; height: 30px; border: none; cursor: pointer; border-radius: 4px; }
+
+.toggle-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    font-size: 0.75rem;
+    text-align: left;
+}
+
+.hud-helper {
+    background: #4a90e2;
+    color: white;
+    font-size: 0.75rem;
+    padding: 5px 15px;
+    border-radius: 20px 20px 0 0;
+    display: inline-block;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.stat-box { background: #eef5ff; padding: 10px; border-radius: 8px; text-align: center; }
+.stat-box h4 { margin: 0; font-size: 0.7rem; color: #4a90e2; }
+.stat-box p { margin: 5px 0 0; font-weight: bold; font-size: 0.9rem; }
+
+.canvas-container {
+    background: #fff; border: 2px solid #eee; border-radius: 8px;
+    display: flex; justify-content: center; align-items: center;
+    cursor: crosshair;
+}
+
+canvas { max-width: 100%; height: auto; }
+
+.actions { margin-top: 20px; display: flex; flex-direction: column; gap: 8px; }
+.btn-action { background: #4a90e2; color: white; border: none; padding: 10px; border-radius: 6px; cursor: pointer; font-weight: bold; }
+.btn-secondary { background: #eee; color: #666; border: none; padding: 8px; border-radius: 6px; cursor: pointer; }
+
+footer { text-align: center; margin-top: 20px; }
+.back-link { text-decoration: none; color: #4a90e2; font-size: 0.9rem; }
+
+@media (max-width: 800px) {
+    .geo-layout { grid-template-columns: 1fr; }
+    .stats-grid { grid-template-columns: 1fr 1fr; }
+}
+
+.back-link:hover { text-decoration: underline; }
